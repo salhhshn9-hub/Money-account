@@ -1,16 +1,12 @@
-```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Money Pro Bank</title>
-
-<link rel="manifest" href="manifest.json">
 
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;800&display=swap" rel="stylesheet">
 
@@ -24,72 +20,59 @@
 
 <body>
 
+<!-- 🔒 LOCK SCREEN -->
+<div id="lockScreen">
+
+<div class="card" style="text-align:center; margin:50% auto; width:80%;">
+
+<h2>🔐 PIN</h2>
+
+<input type="password" id="pinInput" placeholder="أدخل PIN">
+
+<button id="unlockBtn">دخول</button>
+
+</div>
+
+</div>
+
+<!-- APP -->
+<div id="app">
+
 <!-- TOP BAR -->
 <header class="topbar">
 
-<div class="logo">
+<div>
 <i class="fa-solid fa-wallet"></i>
-<span>Money Pro</span>
+<b>Money Pro Bank</b>
 </div>
 
-<div class="top-actions">
-
-<button onclick="toggleLang()" id="langBtn">
-EN
-</button>
-
+<div>
+<button onclick="toggleLang()">🌐</button>
 </div>
 
 </header>
 
-<!-- DASHBOARD -->
-<section class="dashboard">
-
-<div class="card main-card">
-<h3>الرصيد الحالي</h3>
-<p id="totalMoney">0 ر.س</p>
-</div>
-
-<div class="grid">
+<!-- HOME -->
+<section id="home" class="tab">
 
 <div class="card">
-<h4>الدخل</h4>
-<p id="totalIncome">0</p>
+<h2>💰 الرصيد الحالي</h2>
+<p id="totalMoney">0</p>
 </div>
 
 <div class="card">
-<h4>المصروفات</h4>
-<p id="totalExpenses">0</p>
+<h3>إحصائيات</h3>
+<p>الدخل: <span id="totalIncome">0</span></p>
+<p>المصروفات: <span id="totalExpenses">0</span></p>
+<p>الادخار: <span id="totalSavings">0</span></p>
+<p>الأمانات: <span id="totalTrusts">0</span></p>
 </div>
 
 <div class="card">
-<h4>الادخار</h4>
-<p id="totalSavings">0</p>
-</div>
-
-<div class="card">
-<h4>الأمانات</h4>
-<p id="totalTrusts">0</p>
-</div>
-
+<canvas id="incomeExpenseChart"></canvas>
 </div>
 
 </section>
-
-<!-- NAVIGATION -->
-<nav class="bottom-nav">
-
-<button onclick="showTab('home')"><i class="fa fa-home"></i></button>
-
-<button onclick="showTab('income')"><i class="fa fa-arrow-up"></i></button>
-
-<button onclick="showTab('expense')"><i class="fa fa-arrow-down"></i></button>
-
-<button onclick="showTab('people')"><i class="fa fa-users"></i></button>
-
-<button onclick="showTab('more')"><i class="fa fa-bars"></i></button>
-
-</nav>
 
 <!-- INCOME -->
 <section id="income" class="tab">
@@ -135,37 +118,53 @@ EN
 
 <h2>المزيد</h2>
 
-<button onclick="exportData()">تصدير البيانات</button>
+<button onclick="exportData()">📤 تصدير</button>
 
 <input type="file" onchange="importData(event)">
 
-<button onclick="resetApp()">إعادة ضبط</button>
+<button onclick="resetApp()">🔄 إعادة ضبط</button>
 
 <div id="goalsList"></div>
 
 <div id="trustList"></div>
 
-</section>
-
-<!-- CHART -->
-<section class="chart-box">
-
-<canvas id="incomeExpenseChart"></canvas>
+<div id="trashList"></div>
 
 </section>
 
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+
+<button onclick="showTab('home')"><i class="fa fa-home"></i></button>
+
+<button onclick="showTab('income')"><i class="fa fa-arrow-up"></i></button>
+
+<button onclick="showTab('expense')"><i class="fa fa-arrow-down"></i></button>
+
+<button onclick="showTab('people')"><i class="fa fa-users"></i></button>
+
+<button onclick="showTab('more')"><i class="fa fa-bars"></i></button>
+
+</nav>
+
+</div>
+
+<!-- SCRIPTS (IMPORTANT ORDER) -->
 <script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
 <script src="js/language.js"></script>
-<script src="js/app.js"></script>
+
 <script src="js/income.js"></script>
 <script src="js/expenses.js"></script>
 <script src="js/people.js"></script>
 <script src="js/savings.js"></script>
 <script src="js/trusts.js"></script>
 <script src="js/goals.js"></script>
-<script src="js/charts.js"></script>
+
 <script src="js/backup.js"></script>
+<script src="js/charts.js"></script>
+
+<script src="js/app.js"></script>
 
 </body>
 </html>
-```
