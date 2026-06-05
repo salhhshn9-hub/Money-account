@@ -1,1 +1,251 @@
-const key='money_data';let data=JSON.parse(localStorage.getItem(key)||'[]');const list=document.getElementById('list');let chart;function save(){localStorage.setItem(key,JSON.stringify(data));}function totals(){let inc=data.filter(x=>x.type==='income').reduce((a,b)=>a+b.amount,0);let exp=data.filter(x=>x.type==='expense').reduce((a,b)=>a+b.amount,0);income.textContent=inc+' ر.س';expense.textContent=exp+' ر.س';balance.textContent=(inc-exp)+' ر.س';const ctx=document.getElementById('chart');if(chart)chart.destroy();chart=new Chart(ctx,{type:'doughnut',data:{labels:['دخل','مصروف'],datasets:[{data:[inc,exp]}]}});}function render(){list.innerHTML='';data.forEach((x,i)=>list.innerHTML+=`<li>${x.title} - ${x.amount}<button onclick="delItem(${i})">حذف</button></li>`);totals();}function delItem(i){data.splice(i,1);save();render();}addBtn.onclick=()=>{if(!title.value||!amount.value)return;data.push({title:title.value,amount:Number(amount.value),type:type.value});save();render();};if('serviceWorker' in navigator){navigator.serviceWorker.register('./service-worker.js');}render();
+```javascript id="app01"
+document.addEventListener("DOMContentLoaded",()=>{
+
+updateDashboard();
+
+setupEvents();
+
+});
+
+function setupEvents(){
+
+// الدخل
+document.getElementById("addIncomeBtn")
+.onclick = addIncome;
+
+// المصروفات
+document.getElementById("addExpenseBtn")
+.onclick = addExpense;
+
+// الأشخاص
+document.getElementById("addPersonBtn")
+.onclick = addPerson;
+
+// الادخار
+document.getElementById("addSavingBtn")
+.onclick = addSaving;
+
+// الأمانات
+document.getElementById("addTrustBtn")
+.onclick = addTrust;
+
+// الأهداف
+document.getElementById("addGoalBtn")
+.onclick = addGoal;
+
+// النسخ الاحتياطي
+document.getElementById("exportJson")
+.onclick = backupData;
+
+// استيراد
+document.getElementById("importJson")
+.onchange = function(e){
+restoreData(e.target.files[0]);
+};
+
+}
+
+function addIncome(){
+
+const title =
+document.getElementById("incomeTitle").value;
+
+const amount =
+Number(document.getElementById("incomeAmount").value);
+
+const category =
+document.getElementById("incomeCategory").value;
+
+if(!title || !amount) return;
+
+const data = getData();
+
+data.income.push({
+
+id:generateId(),
+
+title,
+
+amount,
+
+category,
+
+date:new Date().toISOString()
+
+});
+
+saveData(data);
+
+updateDashboard();
+
+alert("تم إضافة دخل");
+
+}
+
+function addExpense(){
+
+const title =
+document.getElementById("expenseTitle").value;
+
+const amount =
+Number(document.getElementById("expenseAmount").value);
+
+const category =
+document.getElementById("expenseCategory").value;
+
+if(!title || !amount) return;
+
+const data = getData();
+
+data.expenses.push({
+
+id:generateId(),
+
+title,
+
+amount,
+
+category,
+
+date:new Date().toISOString()
+
+});
+
+saveData(data);
+
+updateDashboard();
+
+alert("تم إضافة مصروف");
+
+}
+
+function addPerson(){
+
+const name =
+document.getElementById("personName").value;
+
+const balance =
+Number(document.getElementById("personBalance").value || 0);
+
+if(!name) return;
+
+const data = getData();
+
+data.people.push({
+
+id:generateId(),
+
+name,
+
+balance,
+
+savings:0,
+
+trusts:0
+
+});
+
+saveData(data);
+
+updateDashboard();
+
+alert("تم إضافة شخص");
+
+}
+
+function addSaving(){
+
+const amount =
+Number(document.getElementById("savingAmount").value);
+
+if(!amount) return;
+
+const data = getData();
+
+data.savings.push({
+
+id:generateId(),
+
+amount,
+
+date:new Date().toISOString()
+
+});
+
+saveData(data);
+
+updateDashboard();
+
+alert("تم إضافة ادخار");
+
+}
+
+function addTrust(){
+
+const name =
+document.getElementById("trustName").value;
+
+const amount =
+Number(document.getElementById("trustAmount").value);
+
+const type =
+document.getElementById("trustType").value;
+
+if(!name || !amount) return;
+
+const data = getData();
+
+data.trusts.push({
+
+id:generateId(),
+
+name,
+
+amount,
+
+type,
+
+date:new Date().toISOString()
+
+});
+
+saveData(data);
+
+updateDashboard();
+
+alert("تم حفظ الأمانة");
+
+}
+
+function addGoal(){
+
+const name =
+document.getElementById("goalName").value;
+
+const target =
+Number(document.getElementById("goalTarget").value);
+
+if(!name || !target) return;
+
+const data = getData();
+
+data.goals.push({
+
+id:generateId(),
+
+name,
+
+target,
+
+current:0
+
+});
+
+saveData(data);
+
+updateDashboard();
+
+alert("تم إضافة هدف");
+
+}
+```
