@@ -1,1 +1,532 @@
-<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Money Account Pro</title><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="css/style.css"><script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head><body><header><h1>💰 Money Account Pro</h1></header><div class="grid"><div class="card"><h3>إجمالي الأموال</h3><p id="balance">0 ر.س</p></div><div class="card"><h3>الدخل</h3><p id="income">0 ر.س</p></div><div class="card"><h3>المصروفات</h3><p id="expense">0 ر.س</p></div></div><section class="card"><input id="title" placeholder="الوصف"><input id="amount" type="number" placeholder="المبلغ"><select id="type"><option value="income">دخل</option><option value="expense">مصروف</option></select><button id="addBtn">إضافة</button></section><section class="card"><ul id="list"></ul></section><section class="card"><canvas id="chart"></canvas></section><script src="js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Finance Ultra Pro Max</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d0e15">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-gradient: radial-gradient(circle at 50% 50%, #1a1c29 0%, #0d0e15 100%);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.07);
+            --glass-accent: rgba(255, 255, 255, 0.1);
+            --neon-green: #00e676;
+            --neon-blue: #00b0ff;
+            --neon-purple: #d500f9;
+            --neon-red: #ff1744;
+            --neon-orange: #ff9100;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --font-ar: 'Tajawal', sans-serif;
+            --font-en: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg-gradient); color: var(--text-primary); font-family: var(--font-ar); min-height: 100vh; overflow-x: hidden; display: flex; justify-content: center; }
+        
+        .app-container { width: 100%; max-width: 480px; background: rgba(13, 14, 21, 0.8); min-height: 100vh; position: relative; display: flex; flex-direction: column; padding-bottom: 90px; border-left: 1px solid var(--glass-border); border-right: 1px solid var(--glass-border); }
+        
+        .glass-card { background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 20px; margin: 15px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); position: relative; }
+        
+        header { display: flex; justify-content: space-between; align-items: center; padding: 25px 20px 10px 20px; }
+        .profile-section { display: flex; align-items: center; gap: 12px; }
+        .avatar-placeholder { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; box-shadow: 0 0 15px rgba(0, 176, 255, 0.4); }
+        
+        .lang-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 8px 16px; border-radius: 14px; cursor: pointer; font-weight: bold; font-family: inherit; }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 15px; }
+        .metric-mini { background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(15px); border-radius: 18px; padding: 15px; display: flex; flex-direction: column; gap: 5px; }
+        .metric-title { font-size: 0.85rem; color: var(--text-secondary); }
+        .metric-val { font-size: 1.15rem; font-weight: 700; font-family: var(--font-en); }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; height: 75px; background: rgba(13, 14, 21, 0.6); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); cursor: pointer; gap: 4px; font-size: 0.75rem; }
+        .nav-item.active { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 176, 255, 0.4); }
+        .nav-item i { font-size: 1.3rem; }
+
+        #lockscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 30% 20%, #1d3557 0%, #0d0e15 100%); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .login-orb { width: 140px; height: 140px; border-radius: 50%; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 30%, #d500f9 100%); margin-bottom: 40px; box-shadow: 0 0 40px rgba(0, 242, 254, 0.25); }
+        .login-card { width: 100%; max-width: 360px; background: linear-gradient(135deg, rgba(0, 242, 254, 0.15) 0%, rgba(213, 0, 249, 0.05) 100%); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 28px; padding: 30px 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+        .login-input-wrapper { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); padding: 10px 0; margin-bottom: 25px; }
+        .login-input { background: transparent; border: none; color: #fff; font-size: 1.05rem; width: 100%; font-family: var(--font-en); }
+        .login-input:focus { outline: none; }
+        .btn-login-submit { width: 100%; max-width: 360px; padding: 16px; margin-top: 30px; border-radius: 25px; border: none; background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%); color: #fff; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: 0 5px 20px rgba(0, 242, 254, 0.3); }
+
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px); z-index: 1000; display: none; justify-content: center; align-items: flex-end; }
+        .modal.active { display: flex; }
+        .modal-content { width: 100%; max-width: 480px; background: #151722; border-top-left-radius: 30px; border-top-right-radius: 30px; border-top: 1px solid var(--glass-border); padding: 30px 20px; max-height: 90vh; overflow-y: auto; }
+        
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary); }
+        .form-control { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 14px; border-radius: 14px; color: #fff; font-family: inherit; font-size: 1rem; }
+        .form-control:focus { outline: none; border-color: var(--neon-blue); }
+        
+        .btn-submit { width: 100%; padding: 15px; border-radius: 16px; border: none; background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); color: #fff; font-weight: 700; font-size: 1rem; cursor: pointer; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 14px; border-bottom: 1px solid var(--glass-border); }
+        
+        .progress-container { width: 100%; background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; margin-top: 10px; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); width: 0%; transition: width 0.5s ease; }
+        .badge { padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; }
+        .time-badge { font-size: 0.75rem; color: var(--neon-purple); font-family: var(--font-en); background: rgba(213,0,249,0.1); padding: 2px 6px; border-radius: 6px; display: inline-block; margin-top: 4px; }
+    </style>
+</head>
+<body>
+
+    <div id="lockscreen">
+        <h1 style="font-family: var(--font-en); font-size: 2.4rem; font-weight: 700; color: #fff; margin-bottom: 5px;">Welcome</h1>
+        <h1 style="font-family: var(--font-en); font-size: 2.4rem; font-weight: 700; color: #fff; margin-bottom: 35px;">Back</h1>
+        <div class="login-orb"></div>
+        <div class="login-card">
+            <div class="login-input-wrapper">
+                <i class="fa-regular fa-user" style="color:#fff;"></i>
+                <input type="text" class="login-input" value="admin@finance.com" readonly>
+            </div>
+            <div class="login-input-wrapper">
+                <i class="fa-solid fa-lock" style="color:#fff;"></i>
+                <input type="password" id="login-pin" class="login-input" placeholder="••••">
+            </div>
+        </div>
+        <button class="btn-login-submit" onclick="verifyLoginGate()">Log In</button>
+    </div>
+
+    <div class="app-container">
+        <header>
+            <div class="profile-section">
+                <div class="avatar-placeholder"><i class="fa-solid fa-crown"></i></div>
+                <div>
+                    <h4 style="font-size: 0.85rem; color: var(--text-secondary);">النظام المالي الفائق Pro</h4>
+                    <h3 style="font-size: 1.1rem;">لوحة التحكم والعهود الذكية</h3>
+                </div>
+            </div>
+            <button class="lang-btn" onclick="toggleLanguage()" id="lang-toggle-btn">EN</button>
+        </header>
+
+        <div id="view-dashboard" class="view-section active">
+            <div class="glass-card" style="background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);">
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">إجمالي رأس المال والأموال المتوفرة</p>
+                <h1 style="font-size: 2.4rem; margin: 8px 0; font-family: var(--font-en);" id="val-total-cash">0.00 ر.س</h1>
+                <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.08); padding-top:12px; display:flex; justify-content:space-between; font-size:0.85rem;">
+                    <div>
+                        <span style="color:var(--text-secondary);">السيولة الصافية الحرة:</span>
+                        <h4 id="val-net-balance" style="font-family: var(--font-en); color:var(--neon-green);">0.00 ر.س</h4>
+                    </div>
+                    <div style="text-align: left;">
+                        <span style="color:var(--text-secondary);">مؤشر الاستهلاك:</span>
+                        <h4 id="val-risk-indicator" style="font-family: var(--font-en); color:var(--neon-orange);">0%</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 0 15px; margin-bottom: 15px;">
+                <button class="btn-submit" style="background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue)); box-shadow: 0 4px 15px rgba(213,0,249,0.3);" onclick="openModal('modal-super-action')">
+                    <i class="fa-solid fa-bolt"></i> تسجيل سريع (أخذت فلوس / صرفت فلوس بوقت محدد)
+                </button>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-mini">
+                    <span class="metric-title"><i class="fa-solid fa-arrow-up" style="color:var(--neon-green)"></i> إجمالي الدخل</span>
+                    <span class="metric-val" id="val-m-income" style="color:var(--neon-green)">0 ر.س</span>
+                </div>
+                <div class="metric-mini">
+                    <span class="metric-title"><i class="fa-solid fa-arrow-down" style="color:var(--neon-red)"></i> إجمالي المصاريف</span>
+                    <span class="metric-val" id="val-m-expense" style="color:var(--neon-red)">0 ر.س</span>
+                </div>
+                <div class="metric-mini">
+                    <span class="metric-title"><i class="fa-solid fa-wallet" style="color:var(--neon-blue)"></i> أمانات وديون عائلية</span>
+                    <span class="metric-val" id="val-m-trusts" style="color:var(--neon-blue)">0 ر.س</span>
+                </div>
+                <div class="metric-mini">
+                    <span class="metric-title"><i class="fa-solid fa-calendar-days" style="color:var(--neon-orange)"></i> فواتير ثابتة متبقية</span>
+                    <span class="metric-val" id="val-m-recurring" style="color:var(--neon-orange)">0 ر.س</span>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h3 style="font-size:1rem; margin-bottom:15px;">التحليل المالي الدائري</h3>
+                <canvas id="dashboardChart" style="max-height: 180px;"></canvas>
+            </div>
+        </div>
+
+        <div id="view-people" class="view-section">
+            <div class="glass-card" style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>الأشخاص والعهود المالية</h3>
+                <button class="lang-btn" style="background:var(--neon-blue); color:#000; border:none;" onclick="openModal('modal-add-person')"><i class="fa-solid fa-user-plus"></i></button>
+            </div>
+            <div id="people-render-target"></div>
+        </div>
+
+        <div id="view-ledger" class="view-section">
+            <div class="glass-card" style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>سجل المعاملات والتوثيق الزمني</h3>
+                <button class="lang-btn" style="background:var(--neon-green); color:#000; border:none;" onclick="openModal('modal-add-tx')"><i class="fa-solid fa-plus"></i> معاملة عامة</button>
+            </div>
+            <div id="ledger-render-target" style="padding:0 15px;"></div>
+        </div>
+
+        <div id="view-recurring" class="view-section">
+            <div class="glass-card" style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>الالتزامات والفواتير الدورية</h3>
+                <button class="lang-btn" style="background:var(--neon-orange); color:#000; border:none;" onclick="openModal('modal-add-recurring')"><i class="fa-solid fa-plus"></i> فاتورة</button>
+            </div>
+            <div id="recurring-render-target"></div>
+        </div>
+
+        <div id="view-settings" class="view-section">
+            <div class="glass-card">
+                <h3 style="margin-bottom:15px;">أهداف الادخار</h3>
+                <button class="btn-submit" style="margin-bottom:15px; background:var(--neon-purple);" onclick="openModal('modal-add-goal')">+ إنشاء هدف ادخار</button>
+                <div id="goals-render-target"></div>
+            </div>
+            <div class="glass-card">
+                <h3>إدارة البيانات والملفات</h3>
+                <button class="btn-submit" style="background:var(--glass-accent); margin-top:10px;" onclick="exportDataJSON()">تصدير واستعراض البيانات</button>
+                <button class="btn-submit" style="background:linear-gradient(90deg, #ff1744, #ff9100); margin-top:15px;" onclick="wipeAllDataAppData()">حذف وتصفير جميع البيانات نهائياً ⚠️</button>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" id="nav-dash" onclick="switchView('dashboard')"><i class="fa-solid fa-chart-pie"></i><span>الرئيسية</span></div>
+            <div class="nav-item" id="nav-ppl" onclick="switchView('people')"><i class="fa-solid fa-users"></i><span>الأشخاص</span></div>
+            <div class="nav-item" id="nav-ledg" onclick="switchView('ledger')"><i class="fa-solid fa-list-ul"></i><span>العمليات</span></div>
+            <div class="nav-item" id="nav-rec" onclick="switchView('recurring')"><i class="fa-solid fa-calendar-check"></i><span>الفواتير</span></div>
+            <div class="nav-item" id="nav-sett" onclick="switchView('settings')"><i class="fa-solid fa-gear"></i><span>الاهداف</span></div>
+        </nav>
+    </div>
+
+    <div id="modal-super-action" class="modal" onclick="closeModalOnOuterClick(event, 'modal-super-action')">
+        <div class="modal-content">
+            <h3 style="color: var(--neon-blue); margin-bottom: 15px;"><i class="fa-solid fa-wallet"></i> محرك التمويل الشخصي والعهود</h3>
+            <div class="form-group">
+                <label>ما هي طبيعة العملية؟</label>
+                <select id="super-type" class="form-control" onchange="toggleSuperFields()">
+                    <option value="borrowed-from">أخذت فلوس من شخص لي (دين/سلفة واردة) (+)</option>
+                    <option value="spent-for-me">صرفت فلوس لي شخصياً (مصروفات ذاتية) (-)</option>
+                </select>
+            </div>
+            <div class="form-group" id="group-super-person">
+                <label>من هو الشخص؟</label>
+                <select id="super-person-select" class="form-control"></select>
+            </div>
+            <div class="form-group"><label>المبلغ (ر.س)</label><input type="number" id="super-amount" class="form-control" placeholder="0.00"></div>
+            <div class="form-group"><label>البيان / السبب بالتفصيل</label><input type="text" id="super-reason" class="form-control" placeholder="مثال: سلفة للإيجار"></div>
+            <div class="form-group"><label>تحديد وقت وتاريخ العملية بالضبط</label><input type="datetime-local" id="super-datetime" class="form-control"></div>
+            <button class="btn-submit" style="background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));" onclick="executeSuperAction()">توثيق وحفظ العملية فوراً ⚡</button>
+        </div>
+    </div>
+
+    <div id="modal-add-person" class="modal" onclick="closeModalOnOuterClick(event, 'modal-add-person')">
+        <div class="modal-content">
+            <h3>إضافة شخص جديد للنظام</h3>
+            <div class="form-group"><label>اسم الشخص</label><input type="text" id="person-name" class="form-control"></div>
+            <button class="btn-submit" onclick="savePerson()">حفظ العضو</button>
+        </div>
+    </div>
+
+    <div id="modal-adjust-person" class="modal" onclick="closeModalOnOuterClick(event, 'modal-adjust-person')">
+        <div class="modal-content">
+            <h3 id="adjust-modal-title">تعديل رصيد شخص</h3>
+            <input type="hidden" id="adjust-person-id">
+            <div class="form-group">
+                <label>نوع العملية الحرة</label>
+                <select id="adjust-action-type" class="form-control">
+                    <option value="deduct">خصم منه / سحب منه مبلغ (-)</option>
+                    <option value="add">إعطاؤه / زيادة رصيده الحركي (+)</option>
+                </select>
+            </div>
+            <div class="form-group"><label>المبلغ (ر.س)</label><input type="number" id="adjust-amount" class="form-control" placeholder="0.00"></div>
+            <div class="form-group"><label>السبب / ماذا فعل بها؟</label><input type="text" id="adjust-reason" class="form-control" placeholder="السبب"></div>
+            <button class="btn-submit" style="background:var(--neon-red);" onclick="executePersonAdjustment()">تطبيق التعديل</button>
+        </div>
+    </div>
+
+    <div id="modal-add-tx" class="modal" onclick="closeModalOnOuterClick(event, 'modal-add-tx')">
+        <div class="modal-content">
+            <h3>تسجيل عملية مالية عامة</h3>
+            <div class="form-group">
+                <label>النوع</label>
+                <select id="tx-type" class="form-control">
+                    <option value="income">دخل وارد (+)</option>
+                    <option value="expense">مصروف خارجي (-)</option>
+                </select>
+            </div>
+            <div class="form-group"><label>المبلغ</label><input type="number" id="tx-amount" class="form-control"></div>
+            <div class="form-group"><label>التصنيف أو المصدر</label><input type="text" id="tx-category" class="form-control"></div>
+            <button class="btn-submit" onclick="saveTransaction()">تسجيل</button>
+        </div>
+    </div>
+
+    <div id="modal-add-recurring" class="modal" onclick="closeModalOnOuterClick(event, 'modal-add-recurring')">
+        <div class="modal-content">
+            <h3>إضافة التزام / فاتورة شهرية</h3>
+            <div class="form-group"><label>اسم الفاتورة</label><input type="text" id="rec-title" class="form-control"></div>
+            <div class="form-group"><label>المبلغ الشهري</label><input type="number" id="rec-amount" class="form-control"></div>
+            <button class="btn-submit" onclick="saveRecurring()">تثبيت</button>
+        </div>
+    </div>
+
+    <div id="modal-add-goal" class="modal" onclick="closeModalOnOuterClick(event, 'modal-add-goal')">
+        <div class="modal-content">
+            <h3>إنشاء هدف ادخار</h3>
+            <div class="form-group"><label>اسم الهدف</label><input type="text" id="goal-title" class="form-control"></div>
+            <div class="form-group"><label>المبلغ المطلوب</label><input type="number" id="goal-target" class="form-control"></div>
+            <button class="btn-submit" onclick="saveGoal()">تفعيل</button>
+        </div>
+    </div>
+
+    <script>
+        let state = {
+            db: { people: [], transactions: [], goals: [], recurring: [] },
+            security: { pin: "1234" },
+            lang: "ar"
+        };
+
+        let dbChart = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('FAMILY_FINANCE_SUPER_DATA');
+            if(saved) state.db = JSON.parse(saved);
+            setNowInDateTimePicker();
+            initChartEngine();
+            renderAll();
+        });
+
+        function setNowInDateTimePicker() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('super-datetime').value = now.toISOString().slice(0,16);
+        }
+
+        function save() {
+            localStorage.setItem('FAMILY_FINANCE_SUPER_DATA', JSON.stringify(state.db));
+            renderAll();
+        }
+
+        function wipeAllDataAppData() {
+            const confirmWipe = confirm("⚠️ تنبيه أمني: هل أنت متأكد من حذف كافة السجلات والبدء من الصفر؟");
+            if(confirmWipe) {
+                state.db = { people: [], transactions: [], goals: [], recurring: [] };
+                localStorage.removeItem('FAMILY_FINANCE_SUPER_DATA');
+                save();
+                alert("تم تصفير النظام! 🧼");
+                location.reload(); 
+            }
+        }
+
+        function verifyLoginGate() {
+            if(document.getElementById('login-pin').value === state.security.pin) {
+                document.getElementById('lockscreen').style.display = 'none';
+            } else {
+                alert("الرمز خطأ! جرب 1234");
+            }
+        }
+
+        function switchView(v) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${v}`).classList.add('active');
+            if(v === 'dashboard') { document.getElementById('nav-dash').classList.add('active'); updateChartEngine(); }
+            if(v === 'people') document.getElementById('nav-ppl').classList.add('active');
+            if(v === 'ledger') document.getElementById('nav-ledg').classList.add('active');
+            if(v === 'recurring') document.getElementById('nav-rec').classList.add('active');
+            if(v === 'settings') document.getElementById('nav-sett').classList.add('active');
+        }
+
+        function formatCurrency(v) { return parseFloat(v).toFixed(2) + " ر.س"; }
+
+        function calculateFinance() {
+            let inc = 0, exp = 0, pplBalance = 0, recTotal = 0, savings = 0;
+            state.db.transactions.forEach(t => {
+                if(['income','person-add','borrowed'].includes(t.type)) inc += parseFloat(t.amount);
+                if(['expense','person-deduct','spent-self'].includes(t.type)) exp += parseFloat(t.amount);
+            });
+            state.db.people.forEach(p => { pplBalance += (p.balance || 0); });
+            state.db.recurring.forEach(r => { if(!r.paid) recTotal += parseFloat(r.amount); });
+            state.db.goals.forEach(g => { savings += parseFloat(g.current || 0); });
+            let totalCash = inc - exp;
+            let net = totalCash - savings;
+            let risk = inc > 0 ? Math.round((exp / inc) * 100) : 0;
+            return { totalCash, net, inc, exp, pplBalance, recTotal, savings, risk };
+        }
+
+        function renderAll() {
+            const f = calculateFinance();
+            document.getElementById('val-total-cash').innerText = formatCurrency(f.totalCash);
+            document.getElementById('val-net-balance').innerText = formatCurrency(f.net);
+            document.getElementById('val-risk-indicator').innerText = f.risk + "%";
+            document.getElementById('val-m-income').innerText = formatCurrency(f.inc);
+            document.getElementById('val-m-expense').innerText = formatCurrency(f.exp);
+            document.getElementById('val-m-trusts').innerText = formatCurrency(f.pplBalance);
+            document.getElementById('val-m-recurring').innerText = formatCurrency(f.recTotal);
+            renderPeople(); renderLedger(); renderRecurring(); renderGoals(); populateSuperPeopleSelect();
+        }
+
+        function populateSuperPeopleSelect() {
+            const select = document.getElementById('super-person-select');
+            select.innerHTML = "";
+            if(state.db.people.length === 0) {
+                select.innerHTML = `<option value="">(لا يوجد أشخاص)</option>`;
+                return;
+            }
+            state.db.people.forEach(p => { select.innerHTML += `<option value="${p.id}">${p.name}</option>`; });
+        }
+
+        function toggleSuperFields() {
+            const type = document.getElementById('super-type').value;
+            document.getElementById('group-super-person').style.display = (type === 'borrowed-from') ? 'block' : 'none';
+        }
+
+        function executeSuperAction() {
+            const type = document.getElementById('super-type').value;
+            const amount = parseFloat(document.getElementById('super-amount').value);
+            const reason = document.getElementById('super-reason').value.trim();
+            const rawDateTime = document.getElementById('super-datetime').value;
+
+            if(!amount || amount <= 0 || !reason || !rawDateTime) return alert("املا كل الخانات!");
+
+            const formattedDate = new Date(rawDateTime).toLocaleString('ar-SA');
+
+            if(type === 'borrowed-from') {
+                const personId = document.getElementById('super-person-select').value;
+                const person = state.db.people.find(p => p.id === personId);
+                if(person) {
+                    person.balance = (person.balance || 0) + amount;
+                    state.db.transactions.push({ id: 'tx_'+Date.now(), type: 'borrowed', amount, category: `من [${person.name}] - ${reason}`, date: formattedDate });
+                }
+            } else {
+                state.db.transactions.push({ id: 'tx_'+Date.now(), type: 'spent-self', amount, category: `مصروف شخصي: ${reason}`, date: formattedDate });
+            }
+            save(); closeModal('modal-super-action');
+        }
+
+        function renderPeople() {
+            const container = document.getElementById('people-render-target'); container.innerHTML = "";
+            state.db.people.forEach(p => {
+                const card = document.createElement('div'); card.className = "glass-card list-item";
+                card.innerHTML = `<div><h4>${p.name}</h4><small>الرصيد: ${formatCurrency(p.balance || 0)}</small></div>
+                <div><button class="lang-btn" onclick="openAdjustPersonModal('${p.id}', '${p.name}')">🔒 تعديل</button></div>`;
+                container.appendChild(card);
+            });
+        }
+
+        function openAdjustPersonModal(id, name) {
+            document.getElementById('adjust-person-id').value = id;
+            document.getElementById('adjust-modal-title').innerText = `إدارة: ${name}`;
+            openModal('modal-adjust-person');
+        }
+
+        function executePersonAdjustment() {
+            const id = document.getElementById('adjust-person-id').value;
+            const action = document.getElementById('adjust-action-type').value;
+            const amount = parseFloat(document.getElementById('adjust-amount').value);
+            const reason = document.getElementById('adjust-reason').value.trim();
+            const person = state.db.people.find(p => p.id === id);
+            if(!person) return;
+            person.balance = person.balance || 0;
+            if(action === 'deduct') {
+                person.balance -= amount;
+                state.db.transactions.push({ id: 'tx_'+Date.now(), type: 'person-deduct', amount, category: `خصم من [${person.name}] - ${reason}`, date: new Date().toLocaleString('ar-SA') });
+            } else {
+                person.balance += amount;
+                state.db.transactions.push({ id: 'tx_'+Date.now(), type: 'person-add', amount, category: `إضافة لـ [${person.name}] - ${reason}`, date: new Date().toLocaleString('ar-SA') });
+            }
+            save(); closeModal('modal-adjust-person');
+        }
+
+        function renderLedger() {
+            const container = document.getElementById('ledger-render-target'); container.innerHTML = "";
+            state.db.transactions.slice().reverse().forEach(t => {
+                const item = document.createElement('div'); item.className = "glass-card list-item";
+                let isAdd = ['income','person-add','borrowed'].includes(t.type);
+                item.style.borderLeft = isAdd ? "4px solid var(--neon-green)" : "4px solid var(--neon-red)";
+                item.innerHTML = `<div><h4>${t.category}</h4><span class="time-badge">${t.date}</span></div>
+                <span style="color:${isAdd?'var(--neon-green)':'var(--neon-red)'}">${isAdd?'+':'-'} ${formatCurrency(t.amount)}</span>`;
+                container.appendChild(item);
+            });
+        }
+
+        function renderRecurring() {
+            const container = document.getElementById('recurring-render-target'); container.innerHTML = "";
+            state.db.recurring.forEach(r => {
+                const card = document.createElement('div'); card.className = "glass-card list-item";
+                card.innerHTML = `<div><h4>${r.title}</h4><span>${formatCurrency(r.amount)}</span></div>
+                <button class="lang-btn" onclick="payRecurring('${r.id}')">تسديد ✅</button>`;
+                container.appendChild(card);
+            });
+        }
+
+        function saveRecurring() {
+            const title = document.getElementById('rec-title').value.trim();
+            const amount = document.getElementById('rec-amount').value;
+            if(title&&amount) { state.db.recurring.push({ id: 'rec_'+Date.now(), title, amount: parseFloat(amount), paid: false }); save(); closeModal('modal-add-recurring'); }
+        }
+
+        function payRecurring(id) {
+            const rec = state.db.recurring.find(r => r.id === id);
+            if(rec) { state.db.transactions.push({ id: 'tx_'+Date.now(), type: 'expense', amount: rec.amount, category: `سداد: ${rec.title}`, date: new Date().toLocaleString('ar-SA') }); save(); }
+        }
+
+        function renderGoals() {
+            const container = document.getElementById('goals-render-target'); container.innerHTML = "";
+            state.db.goals.forEach(g => {
+                let pct = Math.min(100, Math.round(((g.current || 0) / g.target) * 100));
+                const d = document.createElement('div'); d.className = "list-item"; d.style.display = "block";
+                d.innerHTML = `<div><strong>${g.title}</strong> (${pct}%)</div><div class="progress-container"><div class="progress-bar" style="width:${pct}%"></div></div>`;
+                container.appendChild(d);
+            });
+        }
+
+        function savePerson() {
+            const name = document.getElementById('person-name').value.trim();
+            if(name) { state.db.people.push({ id: 'p_'+Date.now(), name, balance: 0 }); save(); closeModal('modal-add-person'); }
+        }
+
+        function saveGoal() {
+            const title = document.getElementById('goal-title').value.trim();
+            const target = document.getElementById('goal-target').value;
+            if(title&&target) { state.db.goals.push({ id: 'g_'+Date.now(), title, target: parseFloat(target), current: 0 }); save(); closeModal('modal-add-goal'); }
+        }
+
+        function saveTransaction() {
+            const type = document.getElementById('tx-type').value;
+            const amount = document.getElementById('tx-amount').value;
+            const category = document.getElementById('tx-category').value.trim();
+            if(amount&&category) { state.db.transactions.push({ id: 'tx_'+Date.now(), type, amount: parseFloat(amount), category, date: new Date().toLocaleString('ar-SA') }); save(); closeModal('modal-add-tx'); }
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function closeModalOnOuterClick(e, id) { if(e.target.id === id) closeModal(id); }
+        function exportDataJSON() { alert(JSON.stringify(state.db)); }
+
+        function initChartEngine() {
+            const ctx = document.getElementById('dashboardChart').getContext('2d');
+            dbChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: ['الدخل', 'المصروفات', 'الادخار'], datasets: [{ data: [0, 0, 0], backgroundColor: ['#00e676', '#ff1744', '#00b0ff'], borderWidth: 0 }] },
+                options: { responsive: true, plugins: { legend: { labels: { color: '#fff', font: { family: 'Tajawal' } } } } }
+            });
+        }
+
+        function updateChartEngine() {
+            if(!dbChart) return;
+            const f = calculateFinance();
+            dbChart.data.datasets[0].data = [f.inc, f.exp, f.savings];
+            dbChart.update();
+        }
+
+        function toggleLanguage() { alert("العربية هي لغة النظام."); }
+    </script>
+</body>
+</html>
