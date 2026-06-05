@@ -1,218 +1,80 @@
-```javascript id="auth01"
-const PIN_KEY = "money_pin";
-
-let appLocked = true;
+```javascript
+let isUnlocked = false;
 
 function getPIN(){
-
-const data =
-getData();
-
+const data = getData();
 return data.settings.pin || "1234";
-
-}
-
-function savePIN(pin){
-
-const data =
-getData();
-
-data.settings.pin = pin;
-
-saveData(data);
-
-}
-
-function showLock(){
-
-const lock =
-document.getElementById("lockScreen");
-
-const app =
-document.getElementById("app");
-
-if(lock) lock.style.display = "flex";
-
-if(app) app.style.display = "none";
-
-appLocked = true;
-
 }
 
 function unlock(){
+const input = document.getElementById("pinInput");
 
-const input =
-document.getElementById("pinInput");
+if(!input) return;
 
 if(input.value === getPIN()){
 
-const lock =
-document.getElementById("lockScreen");
+document.body.classList.add("unlocked");
 
-const app =
-document.getElementById("app");
+const lock = document.getElementById("lockScreen");
+if(lock) lock.style.display = "none";
 
-lock.style.display = "none";
+isUnlocked = true;
 
-app.style.display = "block";
+updateDashboard();
 
-appLocked = false;
+renderAll();
 
 }else{
 
-alert("PIN خطأ");
+alert("PIN خطأ ❌");
+
+input.value = "";
 
 }
 
 }
 
-function initAuth(){
+function initLock(){
 
-const lock =
-document.getElementById("lockScreen");
+const lock = document.getElementById("lockScreen");
 
-const app =
-document.getElementById("app");
+if(lock){
 
-if(lock && app){
+document.body.classList.remove("unlocked");
 
-showLock();
+lock.style.display = "flex";
 
 }
 
 }
 
-function changePIN(newPin){
+function renderAll(){
 
-if(newPin.length < 4) return;
+// تشغيل كل الريندرز بعد فتح التطبيق
 
-savePIN(newPin);
+if(typeof renderIncome === "function") renderIncome();
+if(typeof renderExpenses === "function") renderExpenses();
+if(typeof renderPeople === "function") renderPeople();
+if(typeof renderSavings === "function") renderSavings();
+if(typeof renderTrusts === "function") renderTrusts();
+if(typeof renderGoals === "function") renderGoals();
+if(typeof renderTrash === "function") renderTrash();
 
-alert("تم تغيير PIN بنجاح");
+if(typeof updateCharts === "function") updateCharts();
+
+updateDashboard();
 
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
 
-const btn =
-document.getElementById("unlockBtn");
+const btn = document.getElementById("unlockBtn");
 
 if(btn){
-
 btn.onclick = unlock;
-
 }
 
-initAuth();
-
-});
-```
-```javascript id="auth01"
-const PIN_KEY = "money_pin";
-
-let appLocked = true;
-
-function getPIN(){
-
-const data =
-getData();
-
-return data.settings.pin || "1234";
-
-}
-
-function savePIN(pin){
-
-const data =
-getData();
-
-data.settings.pin = pin;
-
-saveData(data);
-
-}
-
-function showLock(){
-
-const lock =
-document.getElementById("lockScreen");
-
-const app =
-document.getElementById("app");
-
-if(lock) lock.style.display = "flex";
-
-if(app) app.style.display = "none";
-
-appLocked = true;
-
-}
-
-function unlock(){
-
-const input =
-document.getElementById("pinInput");
-
-if(input.value === getPIN()){
-
-const lock =
-document.getElementById("lockScreen");
-
-const app =
-document.getElementById("app");
-
-lock.style.display = "none";
-
-app.style.display = "block";
-
-appLocked = false;
-
-}else{
-
-alert("PIN خطأ");
-
-}
-
-}
-
-function initAuth(){
-
-const lock =
-document.getElementById("lockScreen");
-
-const app =
-document.getElementById("app");
-
-if(lock && app){
-
-showLock();
-
-}
-
-}
-
-function changePIN(newPin){
-
-if(newPin.length < 4) return;
-
-savePIN(newPin);
-
-alert("تم تغيير PIN بنجاح");
-
-}
-
-document.addEventListener("DOMContentLoaded",()=>{
-
-const btn =
-document.getElementById("unlockBtn");
-
-if(btn){
-
-btn.onclick = unlock;
-
-}
-
-initAuth();
+initLock();
 
 });
 ```
