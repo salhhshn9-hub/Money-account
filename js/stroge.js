@@ -268,7 +268,11 @@ balance
 function updateDashboard(){
 
 const totals =
-getTotals();
+getTotals(```javascript
+const totalDebts =
+data.debts.reduce((a,b)=>a+b.remaining,0);
+```
+);
 
 const income =
 document.getElementById(
