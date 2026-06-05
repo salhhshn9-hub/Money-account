@@ -307,4 +307,41 @@ updateDashboard();
 
 }
 ```
+```javascript
+function renderDebts(){
+
+const data = getData();
+
+const container =
+document.getElementById("debtList");
+
+if(!container) return;
+
+container.innerHTML="";
+
+data.debts.forEach(d=>{
+
+container.innerHTML += `
+<div class="person-card">
+
+<h3>${d.name}</h3>
+
+<p>الإجمالي: ${d.originalAmount} ر.س</p>
+
+<p>المسدد: ${d.paid} ر.س</p>
+
+<p>المتبقي: ${d.remaining} ر.س</p>
+
+<button onclick="payDebt(${d.id},100)">
+سداد 100
+</button>
+
+</div>
+`;
+
+});
+
+}
+```
+
 
