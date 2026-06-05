@@ -249,3 +249,62 @@ alert("تم إضافة هدف");
 
 }
 ```
+```javascript
+function addDebt(){
+
+const name =
+document.getElementById("debtName").value;
+
+const amount =
+Number(document.getElementById("debtAmount").value);
+
+if(!name || !amount) return;
+
+const data = getData();
+
+data.debts.push({
+
+id:generateId(),
+
+name,
+
+originalAmount:amount,
+
+paid:0,
+
+remaining:amount,
+
+date:new Date().toISOString()
+
+});
+
+saveData(data);
+
+updateDashboard();
+
+alert("تم إضافة دين");
+
+}
+```
+```javascript
+function payDebt(id, amount){
+
+const data = getData();
+
+const debt = data.debts.find(d=>d.id===id);
+
+if(!debt) return;
+
+debt.paid += amount;
+
+debt.remaining = debt.originalAmount - debt.paid;
+
+if(debt.remaining < 0) debt.remaining = 0;
+
+saveData(data);
+
+updateDashboard();
+
+}
+```
+
