@@ -252,7 +252,7 @@ data.trusts.reduce(
 const balance =
 totalIncome -
 totalExpenses;
-
+return{totalDebts};
 return{
 
 totalIncome,
