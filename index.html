@@ -6,23 +6,17 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Money Account Pro</title>
+<title>Money Pro Bank</title>
 
 <link rel="manifest" href="manifest.json">
 
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 <link rel="stylesheet" href="css/style.css">
-
-<link rel="preconnect"
-href="https://fonts.googleapis.com">
-
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap"
-rel="stylesheet">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -30,507 +24,147 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 <body>
 
-<!-- شاشة القفل -->
-
-<div id="lockScreen">
-
-<div class="lock-box glass">
-
-<h2>
-<i class="fa-solid fa-lock"></i>
-Money Account
-</h2>
-
-<input
-type="password"
-maxlength="6"
-id="pinInput"
-placeholder="PIN">
-
-<button id="unlockBtn">
-دخول
-</button>
-
-</div>
-
-</div>
-
-<!-- التطبيق -->
-
-<div id="app">
-
-<!-- Header -->
-
-<header class="topbar glass">
+<!-- TOP BAR -->
+<header class="topbar">
 
 <div class="logo">
-
 <i class="fa-solid fa-wallet"></i>
-
-<h1>
-Money Account Pro
-</h1>
-
+<span>Money Pro</span>
 </div>
 
-<div class="actions">
+<div class="top-actions">
 
-<button id="langBtn">
-🌐 العربية
-</button>
-
-<button id="themeBtn">
-🌙
+<button onclick="toggleLang()" id="langBtn">
+EN
 </button>
 
 </div>
 
 </header>
 
-<!-- Dashboard -->
+<!-- DASHBOARD -->
+<section class="dashboard">
 
-<section class="stats-grid">
-
-<div class="card glass">
-
-<h3>إجمالي الأموال</h3>
-
-<p id="totalMoney">
-0 ر.س
-</p>
-
+<div class="card main-card">
+<h3>الرصيد الحالي</h3>
+<p id="totalMoney">0 ر.س</p>
 </div>
 
-<div class="card glass">
+<div class="grid">
 
-<h3>إجمالي الدخل</h3>
-
-<p id="totalIncome">
-0 ر.س
-</p>
-
+<div class="card">
+<h4>الدخل</h4>
+<p id="totalIncome">0</p>
 </div>
 
-<div class="card glass">
-
-<h3>إجمالي المصروفات</h3>
-
-<p id="totalExpenses">
-0 ر.س
-</p>
-
+<div class="card">
+<h4>المصروفات</h4>
+<p id="totalExpenses">0</p>
 </div>
 
-<div class="card glass">
-
-<h3>إجمالي الادخار</h3>
-
-<p id="totalSavings">
-0 ر.س
-</p>
-
+<div class="card">
+<h4>الادخار</h4>
+<p id="totalSavings">0</p>
 </div>
 
-<div class="card glass">
-
-<h3>إجمالي الأمانات</h3>
-
-<p id="totalTrusts">
-0 ر.س
-</p>
-
-</div>
-
-<div class="card glass">
-
-<h3>الرصيد المتبقي</h3>
-
-<p id="remainingBalance">
-0 ر.س
-</p>
-
-</div>
-
-</section>
-
-<!-- الأشخاص -->
-
-<section class="section glass">
-
-<h2>
-<i class="fa-solid fa-users"></i>
-إدارة الأشخاص
-</h2>
-
-<div class="form-grid">
-
-<input
-type="text"
-id="personName"
-placeholder="اسم الشخص">
-
-<input
-type="number"
-id="personBalance"
-placeholder="الرصيد">
-
-<button id="addPersonBtn">
-
-إضافة شخص
-
-</button>
-
-</div>
-
-<div id="peopleList">
-
-</div>
-
-</section>
-
-<!-- الدخل -->
-
-<section class="section glass">
-
-<h2>
-
-<i class="fa-solid fa-arrow-trend-up"></i>
-
-الدخل
-
-</h2>
-
-<div class="form-grid">
-
-<input
-id="incomeTitle"
-placeholder="الوصف">
-
-<input
-id="incomeAmount"
-type="number"
-placeholder="المبلغ">
-
-<select id="incomeCategory">
-
-<option>راتب</option>
-<option>مكافأة</option>
-<option>عمل حر</option>
-<option>تحويل</option>
-<option>هدية</option>
-<option>أخرى</option>
-
-</select>
-
-<button id="addIncomeBtn">
-
-إضافة دخل
-
-</button>
-
-</div>
-
-<div id="incomeList">
-
-</div>
-
-</section>
-
-<!-- المصروفات -->
-
-<section class="section glass">
-
-<h2>
-
-<i class="fa-solid fa-arrow-trend-down"></i>
-
-المصروفات
-
-</h2>
-
-<div class="form-grid">
-
-<input
-id="expenseTitle"
-placeholder="الوصف">
-
-<input
-id="expenseAmount"
-type="number"
-placeholder="المبلغ">
-
-<select id="expenseCategory">
-
-<option>أكل</option>
-<option>قهوة</option>
-<option>مواصلات</option>
-<option>سيارة</option>
-<option>اشتراكات</option>
-<option>تسوق</option>
-<option>سفر</option>
-<option>أخرى</option>
-
-</select>
-
-<button id="addExpenseBtn">
-
-إضافة مصروف
-
-</button>
-
-</div>
-
-<div id="expenseList">
-
-</div>
-
-</section>
-
-<!-- الادخار -->
-
-<section class="section glass">
-
-<h2>
-
-<i class="fa-solid fa-piggy-bank"></i>
-
-الادخار
-
-</h2>
-
-<div class="form-grid">
-
-<input
-id="savingAmount"
-type="number"
-placeholder="مبلغ الادخار">
-
-<button id="addSavingBtn">
-
-إضافة ادخار
-
-</button>
-
-</div>
-
-<div id="savingList">
-
-</div>
-
-</section>
-
-<!-- الأمانات -->
-
-<section class="section glass">
-
-<h2>
-
-<i class="fa-solid fa-handshake"></i>
-
-الأمانات
-
-</h2>
-
-<div class="form-grid">
-
-<input
-id="trustName"
-placeholder="اسم الشخص">
-
-<input
-id="trustAmount"
-type="number"
-placeholder="المبلغ">
-
-<select id="trustType">
-
-<option value="deposit">
-إيداع أمانة
-</option>
-
-<option value="return">
-استرجاع
-</option>
-
-</select>
-
-<button id="addTrustBtn">
-
-حفظ
-
-</button>
-
-</div>
-
-<div id="trustList">
-
-</div>
-
-</section>
-
-<!-- أهداف الادخار -->
-
-<section class="section glass">
-
-<h2>
-
-<i class="fa-solid fa-bullseye"></i>
-
-أهداف الادخار
-
-</h2>
-
-<div class="form-grid">
-
-<input
-id="goalName"
-placeholder="اسم الهدف">
-
-<input
-id="goalTarget"
-type="number"
-placeholder="المبلغ المطلوب">
-
-<button id="addGoalBtn">
-
-إضافة هدف
-
-</button>
-
-</div>
-  ```html
-<section class="section glass">
-
-<h2>💳 الديون</h2>
-
-<div class="form-grid">
-
-<input id="debtName" placeholder="اسم الشخص">
-
-<input id="debtAmount" type="number" placeholder="المبلغ">
-
-<button onclick="addDebt()">إضافة دين</button>
-
-</div>
-
-<div id="debtList"></div>
-
-</section>
-```
-
-
-<div id="goalsList">
-
-</div>
-
-</section>
-
-<!-- الرسوم البيانية -->
-
-<section class="section glass">
-
-<h2>
-
-<i class="fa-solid fa-chart-pie"></i>
-
-التقارير
-
-</h2>
-
-<div class="charts-grid">
-
-<div class="chart-card">
-
-<canvas id="incomeExpenseChart">
-
-</canvas>
-
-</div>
-
-<div class="chart-card">
-
-<canvas id="savingsChart">
-
-</canvas>
-
-</div>
-
-<div class="chart-card">
-
-<canvas id="expensesChart">
-
-</canvas>
-
-</div>
-
-<div class="chart-card">
-
-<canvas id="familyChart">
-
-</canvas>
-
+<div class="card">
+<h4>الأمانات</h4>
+<p id="totalTrusts">0</p>
 </div>
 
 </div>
 
 </section>
 
-<!-- النسخ الاحتياطي -->
+<!-- NAVIGATION -->
+<nav class="bottom-nav">
 
-<section class="section glass">
+<button onclick="showTab('home')"><i class="fa fa-home"></i></button>
 
-<h2>
+<button onclick="showTab('income')"><i class="fa fa-arrow-up"></i></button>
 
-<i class="fa-solid fa-database"></i>
+<button onclick="showTab('expense')"><i class="fa fa-arrow-down"></i></button>
 
-النسخ الاحتياطي
+<button onclick="showTab('people')"><i class="fa fa-users"></i></button>
 
-</h2>
+<button onclick="showTab('more')"><i class="fa fa-bars"></i></button>
 
-<div class="backup-buttons">
+</nav>
 
-<button id="exportJson">
+<!-- INCOME -->
+<section id="income" class="tab">
 
-تصدير JSON
+<h2>الدخل</h2>
 
-</button>
+<input id="incomeTitle" placeholder="الوصف">
+<input id="incomeAmount" type="number" placeholder="المبلغ">
+<button onclick="addIncome()">إضافة</button>
 
-<button id="importJson">
-
-استيراد JSON
-
-</button>
-
-<button id="exportPdf">
-
-تصدير PDF
-
-</button>
-
-<button id="exportExcel">
-
-تصدير Excel
-
-</button>
-
-</div>
+<div id="incomeList"></div>
 
 </section>
 
-</div>
+<!-- EXPENSE -->
+<section id="expense" class="tab">
+
+<h2>المصروفات</h2>
+
+<input id="expenseTitle" placeholder="الوصف">
+<input id="expenseAmount" type="number">
+<button onclick="addExpense()">إضافة</button>
+
+<div id="expenseList"></div>
+
+</section>
+
+<!-- PEOPLE -->
+<section id="people" class="tab">
+
+<h2>الأشخاص</h2>
+
+<input id="personName" placeholder="الاسم">
+<input id="personBalance" type="number">
+<button onclick="addPerson()">إضافة</button>
+
+<div id="peopleList"></div>
+
+</section>
+
+<!-- MORE -->
+<section id="more" class="tab">
+
+<h2>المزيد</h2>
+
+<button onclick="exportData()">تصدير البيانات</button>
+
+<input type="file" onchange="importData(event)">
+
+<button onclick="resetApp()">إعادة ضبط</button>
+
+<div id="goalsList"></div>
+
+<div id="trustList"></div>
+
+</section>
+
+<!-- CHART -->
+<section class="chart-box">
+
+<canvas id="incomeExpenseChart"></canvas>
+
+</section>
 
 <script src="js/storage.js"></script>
-<script src="js/auth.js"></script>
 <script src="js/language.js"></script>
-<script src="js/people.js"></script>
+<script src="js/app.js"></script>
 <script src="js/income.js"></script>
 <script src="js/expenses.js"></script>
+<script src="js/people.js"></script>
 <script src="js/savings.js"></script>
 <script src="js/trusts.js"></script>
 <script src="js/goals.js"></script>
 <script src="js/charts.js"></script>
 <script src="js/backup.js"></script>
-<script src="js/app.js"></script>
 
 </body>
 </html>
