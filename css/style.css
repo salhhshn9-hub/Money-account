@@ -1,0 +1,1 @@
+body{font-family:Arial;background:#020617;color:#fff;padding:20px}.card{background:rgba(255,255,255,.08);padding:16px;border-radius:16px;margin:12px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}input,select,button{padding:10px;margin:4px;width:100%}
